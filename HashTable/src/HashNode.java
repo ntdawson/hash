@@ -11,4 +11,7 @@ public class HashNode<K,V> {
 	public HashNode() {
 		
 	}
+	public void displayNode() {
+		System.out.println(key + " means: " + value);
+	}
 }

@@ -3,7 +3,11 @@ import java.util.ArrayList;
 
 public class HashTable<K, V> {
 	ArrayList<HashNode<K, V>> bucketArray = new ArrayList<>();
-	int numBuckets = 11;
+	int numBuckets = 27; /*
+							 * seems like the closer size is to numBuckets, the higher rate of collisions?
+							 * It would be interesting to study how collision rate relates to array size, or
+							 * likeness of data.
+							 */
 	int size;
 
 	public HashTable() {
@@ -21,25 +25,23 @@ public class HashTable<K, V> {
 	}
 
 	/*
-	 * Is there a way to accomplish this without casting?
-	 * I can't say K extends String, how else can I say
-	 * K has the .length() method?
+	 * Is there a way to accomplish this without casting? I can't say K extends
+	 * String, how else can I say K has the .length() method?
 	 */
 	public int hashCode(K key) {
 		int hashVal = 0;
 		for (int j = 0; j < ((String) key).length(); j++) {
 			int letter = ((String) key).charAt(j) - 96; // get char code
-			
+
 			/*
-			 * Apparently Java's modulo operator takes the sign of the dividend.
-			 * I was getting negative results from this hash function!
+			 * Apparently Java's modulo operator takes the sign of the dividend. I was
+			 * getting negative results from this hash function!
 			 * 
-			 * fixed it:
-			 * (a % b + b) is necessarily positive and lower than b.
-			 * If a is already positive, that statement is larger than b.
-			 * So (a % b + b) % b = A necessarily positive value smaller than b
+			 * fixed it: (a % b + b) is necessarily positive and lower than b. If a is
+			 * already positive, that statement is larger than b. So (a % b + b) % b = A
+			 * necessarily positive value smaller than b
 			 */
-			hashVal = ((hashVal * 27 + letter) % numBuckets + numBuckets) % numBuckets; 
+			hashVal = ((hashVal * 27 + letter) % numBuckets + numBuckets) % numBuckets;
 		}
 		return hashVal;
 	}
@@ -95,7 +97,7 @@ public class HashTable<K, V> {
 	public void add(K key, V value) {
 
 		int index = getBucketIndex(key);
-		System.out.println(index);
+		System.out.println("Adding " + key + " to: " + index);
 		HashNode<K, V> head = bucketArray.get(index);
 		HashNode<K, V> toAdd = new HashNode<>();
 		toAdd.key = key;
@@ -122,7 +124,7 @@ public class HashTable<K, V> {
 		}
 		// resize the array if our load factor is 0.7 or greater
 		if ((1.0 * size) / numBuckets > 0.7) {
-			System.out.println("Increasing table size!");
+			System.out.println("Increasing table size!" + System.lineSeparator());
 			ArrayList<HashNode<K, V>> temp = bucketArray;
 			bucketArray = new ArrayList<>();
 			numBuckets = numBuckets * 2;
@@ -138,4 +140,19 @@ public class HashTable<K, V> {
 
 		}
 	}
+
+	public void displayList() {
+		System.out.println("List (first-->last): ");
+		HashNode<K, V> head = bucketArray.get(0);
+		for (int i = 0; i < numBuckets; i++) {
+			while (head != null) {
+				head.displayNode();
+				head = head.next;
+			}
+			head = bucketArray.get(i);
+		}
+		System.out.println("done!" + System.lineSeparator());
+
+	}
+
 }
